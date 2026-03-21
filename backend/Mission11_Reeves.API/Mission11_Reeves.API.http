@@ -1,0 +1,7 @@
+@Mission11_Reeves.API_HostAddress = http://localhost:5075
+@Mission11_Reeves = variable value
+
+GET {{Mission11_Reeves.API_HostAddress}}/WeatherForecast/
+Accept: application/json
+
+###
