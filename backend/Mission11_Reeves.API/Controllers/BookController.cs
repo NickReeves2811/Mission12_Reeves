@@ -16,10 +16,14 @@ namespace WaterProject.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(int pageNum = 1, int pageSize = 5, string sortOrder = "asc")
+        public IActionResult Get(int pageNum = 1, int pageSize = 5, string sortOrder = "asc", string category = "")
         {
             // Start with an IQueryable — nothing hits the DB yet
             var query = _context.Books.AsQueryable();
+
+            // Filter by category if one was selected (empty string means "all categories")
+            if (!string.IsNullOrEmpty(category))
+                query = query.Where(b => b.Category == category);
 
             // Apply sorting based on the sortOrder parameter
             if (sortOrder == "desc")
@@ -37,6 +41,18 @@ namespace WaterProject.API.Controllers
                 .ToList();
 
             return Ok(new { books, totalNumBooks });
+        }
+
+        [HttpGet("categories")]
+        public IActionResult GetCategories()
+        {
+            var categories = _context.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+
+            return Ok(categories);
         }
     }
 }
