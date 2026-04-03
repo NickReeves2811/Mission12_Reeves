@@ -12,7 +12,10 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5174")
+        policy.WithOrigins(
+                  "http://localhost:5174",
+                  "https://delightful-desert-0a849201e.1.azurestaticapps.net"
+              )
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
