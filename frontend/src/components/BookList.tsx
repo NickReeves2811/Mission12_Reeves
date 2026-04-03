@@ -2,23 +2,8 @@ import { useEffect, useState } from 'react';
 import { useCart } from '../context/CartContext';
 import Cart from './Cart';
 import AddedToCartToast from './AddedToCartToast';
-
-interface Book {
-  bookId: number;
-  title: string;
-  author: string;
-  publisher: string;
-  isbn: string;
-  classification: string;
-  category: string;
-  pageCount: number;
-  price: number;
-}
-
-interface BooksResponse {
-  books: Book[];
-  totalNumBooks: number;
-}
+import Pagination from './Pagination';
+import { fetchBooks, fetchCategories, Book, BooksResponse } from '../api/BooksAPI';
 
 function BookList() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -37,21 +22,17 @@ function BookList() {
 
   // Fetch distinct categories once on mount
   useEffect(() => {
-    fetch('http://localhost:5075/api/book/categories')
-      .then((res) => res.json())
-      .then((data: string[]) => setCategories(data));
+    fetchCategories().then((data: string[]) => setCategories(data));
   }, []);
 
   // Re-fetch books whenever page, size, sort, or category changes
   useEffect(() => {
-    fetch(
-      `http://localhost:5075/api/book?pageNum=${pageNum}&pageSize=${pageSize}&sortOrder=${sortOrder}&category=${selectedCategory}`
-    )
-      .then((res) => res.json())
-      .then((data: BooksResponse) => {
+    fetchBooks(pageNum, pageSize, sortOrder, selectedCategory).then(
+      (data: BooksResponse) => {
         setBooks(data.books);
         setTotalItems(data.totalNumBooks);
-      });
+      }
+    );
   }, [pageNum, pageSize, sortOrder, selectedCategory]);
 
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -196,40 +177,11 @@ function BookList() {
       </div>
 
       {/* Pagination */}
-      <nav aria-label="Book list pagination">
-        <ul className="pagination justify-content-center">
-          <li className={`page-item ${pageNum === 1 ? 'disabled' : ''}`}>
-            <button
-              className="page-link"
-              onClick={() => setPageNum((p) => p - 1)}
-            >
-              Previous
-            </button>
-          </li>
-
-          {Array.from({ length: totalPages }, (_, i) => (
-            <li
-              key={i + 1}
-              className={`page-item ${pageNum === i + 1 ? 'active' : ''}`}
-            >
-              <button className="page-link" onClick={() => setPageNum(i + 1)}>
-                {i + 1}
-              </button>
-            </li>
-          ))}
-
-          <li
-            className={`page-item ${pageNum === totalPages ? 'disabled' : ''}`}
-          >
-            <button
-              className="page-link"
-              onClick={() => setPageNum((p) => p + 1)}
-            >
-              Next
-            </button>
-          </li>
-        </ul>
-      </nav>
+      <Pagination
+        pageNum={pageNum}
+        totalPages={totalPages}
+        onPageChange={setPageNum}
+      />
 
       {/* Cart Offcanvas */}
       <Cart show={showCart} onClose={() => setShowCart(false)} />

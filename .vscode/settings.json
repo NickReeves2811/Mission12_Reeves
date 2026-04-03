@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/58008f47-4d8b-407b-9f7e-f44555504479/resourceGroups/appsvc_windows_francecentral/providers/Microsoft.Web/sites/Bookstore-Backend-Reeves",
+    "appService.deploySubpath": "backend/Mission11_Reeves.API/publish"
+}
